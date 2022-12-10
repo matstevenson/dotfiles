@@ -1,0 +1,18 @@
+###############################################################################
+#   .zshenv
+#
+#       Loaded by all shells, interactive & login
+#         Loaded before everything else, including .zprofile, .zshrc
+#
+#       Set environment variables other programs will need to be set
+#       Don't put too much in here apparently
+###############################################################################
+
+### SOURCE LOCAL/PRIVATE ZSHENV
+if [[ -e "$HOME/dotfiles/private/zshenv.local" ]]; then
+  source "$HOME/dotfiles/private/zshenv.local"
+fi
+
+if [[ -e "$HOME/dotfiles/private/zshenv.private" ]]; then
+  source "$HOME/dotfiles/private/zshenv.private"
+fi

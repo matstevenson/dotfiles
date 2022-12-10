@@ -1,0 +1,44 @@
+###############################################################################
+#    .bashrc
+#
+#      This file should ideally be kept small, focusing on linking
+#      Loaded by interactive shells, that are also non-login
+#
+#      Note: Currently .bash_profile is set to source this file so that
+#            even login shells load .bashrc
+###############################################################################
+
+
+### ENVIRONMENT VARIABLES
+export DOTFILES=$HOME/dotfiles
+
+### SOURCE LOCAL FILES SYMLINKED TO HOME DIRECTORY
+if [[ -e "$HOME/.paths.local" ]]; then
+  source "$HOME/.paths.local"
+fi
+
+
+### SOURCE ALL APPROPRIATE FILES WITHIN DOTFILES PROJECT
+shopt -s nullglob
+
+for config_file in $DOTFILES/source/bash/*
+do
+  source $config_file
+done
+
+for config_file in $DOTFILES/source/system/*
+do
+  source $config_file
+done
+
+for config_file in $DOTFILES/private/source/bash/*
+do
+  source $config_file
+done
+
+for config_file in $DOTFILES/private/source/system/*
+do
+  source $config_file
+done
+
+shopt -u nullglob

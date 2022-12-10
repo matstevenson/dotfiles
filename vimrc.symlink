@@ -1,0 +1,390 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  .vimrc - Vim Configuration File
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" -- MAPPING CONVENTIONS --
+  " <leader>c is used for CONFIG commands
+  " <leader>n is used for <TBD> commands
+  " <leader>f is used for Command-T commands for relative folders
+  " <leader>g is used for Command-T commands for Rails-specific folders
+
+
+  " (Set File Encoding)
+if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+   set fileencodings=ucs-bom,utf-8,latin1
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   BASIC EDITOR CONFIGURATION
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+  " (PROGRAM CONFIGURATION)
+set nocompatible          	" Use Vim defaults (much better!) (keep at top of .vimrc)
+set shell=bash              " (switched to bash for increased compatibility)
+set bs=indent,eol,start	    " allow backspacing over everything in insert mode
+set history=10000           " adjust size of command line history
+set viminfo='20,\"50	      " read/write a .viminfo file, don't store more than 50 lines of registers
+
+
+let mapleader=","           " Set to ',' instead of '\'. It is referenced in the .vimrc file as <leader>
+
+
+  " (TEMPORARY FILE STORAGE SETTINGS)
+set backup
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set backupskip=/tmp/*,/private/tmp/*
+
+  " (BEHAVIOUR CONFIGURATATION)
+set showcmd                 " Show incomplete commands in bottom-right (?)
+set showmatch               " Briefly show the matching parenthesis
+set incsearch               " Highlights search results as you type
+set hlsearch                " When there's a previous search pattern, highlight all its matches (?)
+set wildmenu                " Make tab complettion more like bash
+set ignorecase smartcase    " Make searching case sensitive only when searches contain upper-case letters
+set scrolloff=4             " Always have a few lines above/below the cursor position. Shows more context
+set hidden                  " Allow unsaved background buffers and remember marks/undos for them
+set switchbuf=useopen       " (?)
+set visualbell              " Flash the screen when an error occurs, but make no sound
+
+set tabstop=2               " Number of spaces a <tab> counts for (?)
+set softtabstop=2           " Number of spaces a tab counts for during editing operations (e.g. inserting a tab) (?)
+set shiftwidth=2            " Number of spaces to use for each step of auto-indent (?)
+set expandtab               " (?)
+set autoindent              " Always set autoindenting on (?)
+
+  " (APPEARANCE CONFIGURATION)
+set number                  " Always show line numbers
+set ruler                   " Show the cursor position all the time
+set cmdheight=2             " Height of the command bar at the bottom
+set winwidth=79             " When using Vertical Split, have a minimum window size
+set laststatus=2            " Determines when the window will have a status line
+set numberwidth=5           " Minimal number of columns to use for the line width
+set showtabline=2           " Always show the 'line with tab page' labels
+syntax on                   " Allow syntax highlighting - unsure
+
+set background=dark         " Set the window background
+
+
+" Enable file type detection.
+" Use the default filetype settings, so that mail gets 'tw' set to 72,
+" 'cindent' is on in C files, etc.
+" Also load indent files, to automatically do language-dependent indenting.
+filetype plugin indent on
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   CUSTOM AUTOCOMMANDS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+augroup vimrcEx
+  " Clear all autocmds in the group   (from Gary)
+  autocmd!
+  autocmd FileType text setlocal textwidth=78
+  " Jump to last cursor position unless it's invalid or in an event handler
+  autocmd BufReadPost *
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+
+  "for ruby, autoindent with two spaces, always expand tabs
+  autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber set ai sw=2 sts=2 et
+  autocmd FileType python set sw=4 sts=4 et
+
+  autocmd! BufRead,BufNewFile *.sass setfiletype sass
+
+  autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
+  autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
+
+  " Indent p tags
+  autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd' | endif
+
+  " Don't syntax highlight markdown because it's often wrong
+  autocmd! FileType mkd setlocal syn=off
+
+  " Leave the return key alone when in command line windows, since it's used
+  " to run commands there.
+  autocmd! CmdwinEnter * :unmap <cr>
+  autocmd! CmdwinLeave * :call MapCR()
+augroup END
+
+
+" Only do this part when compiled with support for autocommands (from J)
+
+if has("autocmd")
+  augroup fedora
+  autocmd!
+  " In text files, always limit the width of text to 78 characters
+  autocmd BufRead *.txt set tw=78
+  " When editing a file, always jump to the last cursor position
+  autocmd BufReadPost *
+  \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+  \   exe "normal! g'\"" |
+  \ endif
+  " don't write swapfile on most commonly used directories for NFS mounts or USB sticks
+  autocmd BufNewFile,BufReadPre /media/*,/mnt/* set directory=~/tmp,/var/tmp,/tmp
+  " start with spec file template
+  autocmd BufNewFile *.spec 0r /usr/share/vim/vimfiles/template.spec
+  augroup END
+endif
+
+if has("cscope") && filereadable("/usr/bin/cscope")
+   set csprg=/usr/bin/cscope
+   set csto=0
+   set cst
+   set nocsverb
+   " add any database in current directory
+   if filereadable("cscope.out")
+      cs add cscope.out
+   " else add database pointed to by environment
+   elseif $CSCOPE_DB != ""
+      cs add $CSCOPE_DB
+   endif
+   set csverb
+endif
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" COLOR
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syntax enable
+
+" --- THESE COLOUR SETTINGS ARE NOT NEEDED IF YOU SET UP THE COLOUR SCHEME IN
+"     iTerm
+":set t_Co=256 " 256 colors
+"set background=dark
+"colorscheme solarized
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" STATUS LINE
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+:set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  KEY MAPPINGS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Start the copy to clipboard register command using ,y
+  map <leader>y "*y
+
+" Paste from clipboard register using ,p and ,P
+  map <leader>p "*p
+  map <leader>P "*P
+
+" Move around splits with <c-hjkl>
+  nnoremap <c-j> <c-w>j
+  nnoremap <c-k> <c-w>k
+  nnoremap <c-h> <c-w>h
+  nnoremap <c-l> <c-w>l
+
+" Insert a hash rocket with <c-l>
+  imap <c-l> <space>=><space>
+
+" Reformat entire document to meet line character limit
+  map <leader>r gggqG<C-o><C-o>
+
+" Insert a new line above/below without going into insert mode
+  map <leader>O O<esc>j
+  map <leader>o o<esc>k
+
+" Have ctrl-c act as Esc does in Insert Mode
+  imap <c-c> <esc>
+
+" Have ctrl-s act as a way to save
+  map <C-s> <esc>:w<CR>
+  imap <C-s> <esc>:w<CR>
+
+" Switch between alternate windows using ,,
+  nnoremap <leader><leader> <c-^>
+
+" Clear the search buffer when hitting return
+  function! MapCR()
+    nnoremap <cr> :nohlsearch<cr>
+  endfunction
+  call MapCR()
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  CONFIG KEY MAPPINGS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Toggle between number and nonumber
+  map <leader>cn :set number! number? <cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   ARROW KEYS ARE UNACCEPTABLE
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+map <Left> :echo "h!"<cr>
+map <Right> :echo "l!"<cr>
+map <Up> :echo "k!"<cr>
+map <Down> :echo "j!"<cr>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" MULTIPURPOSE TAB KEY
+" Indent if we're at the beginning of a line. Else, do completion.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
+endfunction
+inoremap <tab> <c-r>=InsertTabWrapper()<cr>
+inoremap <s-tab> <c-n>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" OPEN FILES IN DIRECTORY OF CURRENT FILE
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+cnoremap %% <C-R>=expand('%:h').'/'<cr>
+map <leader>e :edit %%
+map <leader>v :view %%
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   CUSTOM FUNCTIONS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! RemoveTrailingWhitespace()
+    :%s/\s\+$//c
+endfunction
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" RENAME CURRENT FILE
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! RenameFile()
+    let old_name = expand('%')
+    let new_name = input('New file name: ', expand('%'), 'file')
+    if new_name != '' && new_name != old_name
+        exec ':saveas ' . new_name
+        exec ':silent !rm ' . old_name
+        redraw!
+    endif
+endfunction
+" (Temporarily mapped to ln, change later)
+map <leader>ln :call RenameFile()<cr>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" MAPS TO JUMP TO SPECIFIC COMMAND-T TARGETS AND FILES
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+map <leader>gr :topleft :split config/routes.rb<cr>
+function! ShowRoutes()
+  " Requires 'scratch' plugin
+  :topleft 100 :split __Routes__
+  " Make sure Vim doesn't write __Routes__ as a file
+  :set buftype=nofile
+  " Delete everything
+  :normal 1GdG
+  " Put routes output in buffer
+  :0r! rake -s routes
+  " Size window to number of lines (1 plus rake output length)
+  :exec ":normal " . line("$") . "_ "
+  " Move cursor to bottom
+  :normal 1GG
+  " Delete empty trailing line
+  :normal dd
+endfunction
+map <leader>gR :call ShowRoutes()<cr>
+map <leader>gv :CommandTFlush<cr>\|:CommandT app/views<cr>
+map <leader>gc :CommandTFlush<cr>\|:CommandT app/controllers<cr>
+map <leader>gm :CommandTFlush<cr>\|:CommandT app/models<cr>
+map <leader>gh :CommandTFlush<cr>\|:CommandT app/helpers<cr>
+map <leader>gl :CommandTFlush<cr>\|:CommandT lib<cr>
+map <leader>gp :CommandTFlush<cr>\|:CommandT public<cr>
+map <leader>gs :CommandTFlush<cr>\|:CommandT public/stylesheets/sass<cr>
+map <leader>gf :CommandTFlush<cr>\|:CommandT features<cr>
+map <leader>gg :topleft 100 :split Gemfile<cr>
+map <leader>gt :CommandTFlush<cr>\|:CommandTTag<cr>
+map <leader>f :CommandTFlush<cr>\|:CommandT<cr>
+map <leader>F :CommandTFlush<cr>\|:CommandT %%<cr>
+
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Md5 COMMAND
+" Show the MD5 of the current buffer
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+command! -range Md5 :echo system('echo '.shellescape(join(getline(<line1>, <line2>), '\n')) . '| md5')
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" OpenChangedFiles COMMAND
+" Open a split for each dirty file in git
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! OpenChangedFiles()
+  only " Close all windows, unless they're modified
+  let status = system('git status -s | grep "^ \?\(M\|A\|UU\)" | sed "s/^.\{3\}//"')
+  let filenames = split(status, "\n")
+  exec "edit " . filenames[0]
+  for filename in filenames[1:]
+    exec "sp " . filename
+  endfor
+endfunction
+command! OpenChangedFiles :call OpenChangedFiles()
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" InsertTime COMMAND
+" Insert the current time
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+command! InsertTime :normal a<c-r>=strftime('%F %H:%M:%S.0 %z')<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   FROM J'S VIMRC
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+filetype plugin on
+
+" Don't wake up system with blinking cursor:
+" http://www.linuxpowertop.org/known.php
+let &guicursor = &guicursor . ",a:blinkon0"
+
+" for pgdump files:
+au BufNewFile,BufRead *.pgdump setf sql
+au BufNewFile,BufRead *.pgsql  setf sql
+au BufNewFile,BufRead *.less   setf less
+au BufNewFile,BufRead *.scss   setf css
+au BufNewFile,BufRead Gemfile  setf ruby
+au BufNewFile,BufRead *.coffee  setf coffee
+au BufNewFile,BufRead *.jst    let b:eruby_subtype = "js" | setf eruby
+
+" Append modeline after last line in buffer.
+" Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
+" files.
+function! AppendModeline()
+  let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d :",
+        \ &tabstop, &shiftwidth, &textwidth)
+  let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+  call append(line("$"), l:modeline)
+endfunction
+nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
+
+" clear trailing whitespace before writing to buffer
+if has("autocmd")
+  autocmd BufWritePre * :%s/\s\+$//e
+endif
+
+set modeline
+let g:local_vimrc=".vimrc_local"
+set tags+=gems.tags
+
+if filereadable($HOME."/.vimrc.local.vim")
+  source ${HOME}/.vimrc.local.vim
+end
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   OUTDATED & BROKEN & UNUSED
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"set cursorline              " highlight current line
+"set backup		               " keep a backup file
+

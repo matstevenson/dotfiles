@@ -1,0 +1,10 @@
+*.swp
+.sass-cache
+
+Desktop.ini
+Thumbs.db
+*/.DS_Store
+.DS_Store
+._*
+
+*/project.xcworkspace/xcuserdata/

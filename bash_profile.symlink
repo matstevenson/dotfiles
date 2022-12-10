@@ -1,0 +1,22 @@
+###############################################################################
+#    .bash_profile
+#
+#      Loaded by login shells
+###############################################################################
+
+### Load bashrc, even for login shells
+[[ -r ~/.bashrc ]] && . ~/.bashrc
+
+
+### User Gems
+export GEM_HOME=$HOME/.gem
+export PATH=$GEM_HOME/bin:$PATH
+
+
+### rbenv
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
+### PATH STUFF INCLUDED BY OTHERS
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+

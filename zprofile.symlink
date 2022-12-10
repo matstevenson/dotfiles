@@ -1,0 +1,22 @@
+###############################################################################
+#    .zprofile
+#
+#       Loaded by login shells
+#         Loads after .zshenv
+#         Loads before .zshrc
+#         Loads before .zlogin
+###############################################################################
+
+### SOURCE LOCAL/PRIVATE ZPROFILE
+if [[ -e "$HOME/dotfiles/private/zprofile.local" ]]; then
+  source "$HOME/dotfiles/private/zprofile.local"
+fi
+
+if [[ -e "$HOME/dotfiles/private/zprofile.private" ]]; then
+  source "$HOME/dotfiles/private/zprofile.private"
+fi
+
+# Setting PATH for Python 3.8
+# The original version is saved in .zprofile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}"
+export PATH

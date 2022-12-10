@@ -1,0 +1,17 @@
+###############################################################################
+#    .zlogin
+#
+#       Loaded by login shells
+#         Loads after .zshenv
+#         Loads after .zprofile
+#         Loads after .zshrc
+###############################################################################
+
+### SOURCE LOCAL/PRIVATE ZLOGIN
+if [[ -e "$HOME/dotfiles/private/zlogin.local" ]]; then
+  source "$HOME/dotfiles/private/zlogin.local"
+fi
+
+if [[ -e "$HOME/dotfiles/private/zlogin.private" ]]; then
+  source "$HOME/dotfiles/private/zlogin.private"
+fi

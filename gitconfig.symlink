@@ -1,0 +1,72 @@
+# vim: ft=gitconfig
+
+###############################################################################
+#    Global gitconfig.
+#         Private/local information included from separate file
+###############################################################################
+
+[include]
+  path = ~/.gitconfig.local
+[merge]
+  tool = vimdiff
+[filemerge]
+  executable = vimdiff
+[core]
+  whitespace = error,trailing-space,cr-at-eol,-blank-at-eof,tab-in-indent
+	excludesfile = ~/.gitignore_global
+  editor = /usr/bin/vim
+  pager = /usr/bin/less -XRS -x4
+[color]
+  ui = true
+[color "diff"]
+  whitespace = red reverse
+[gui]
+  fontui   = -family Inconsolata -size 14 -weight normal -slant roman -underline 0 -overstrike 0
+  fontdiff = -family Inconsolata -size 14 -weight normal -slant roman -underline 0 -overstrike 0
+[grep]
+  extendedRegexp = true
+  patternType = perl
+[branch]
+  autosetuprebase = always
+[hooks "pre-commit"]
+  enabled = true
+  whitespace-rb = true
+[push]
+  default = simple
+[pack]
+  threads = 0
+[alias]
+  st       = status
+  ff       = merge --ff-only
+  co       = checkout
+  cherry   = cherry-pick
+  commit   = commit --verbose
+  up       = "!sh -c 'if [ -d .git/svn ]; then git svn rebase; else git pull --rebase $@; fi' -"
+  grep-all = !sh -c 'git rev-list --all | xargs git grep \"${1}\"' -
+  qlog     = log --no-merges --graph --pretty=format:'%Cred%h%Creset - %C(green)%aN%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset'
+  #
+  ws       = diff-index --color --check HEAD
+  igrep    = grep --no-index
+  svn-diff = diff remotes/git-svn
+  whois    = !sh -c 'git log -i -1 --pretty=\"format::%an <%ae>\n\" --author=\"$1\"' -
+  mlog     = log --graph --pretty=format:'%Cred%h%Creset - %C(green)%aN%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset'
+  clog     = !sh -c 'git qlog --cherry-mark HEAD..$@' -
+  slog     = stash list --pretty=format:'%Cred%gd - %h%Creset - %C(green)%aN%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset'
+  plog     = log --patch --parents
+  flog     = whatchanged --graph --parents
+  ca       = !sh -c 'git commit-amend $@' -
+  commit-amend = commit --amend -C HEAD
+[tig]
+  show-date = relative
+  line-graphics = utf8
+  tab-size = 4
+[sendemail]
+  multiedit = true
+  suppresscc = self
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[init]
+	defaultBranch = main

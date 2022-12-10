@@ -1,0 +1,40 @@
+###############################################################################
+#    .zshrc
+#
+#      This file should ideally be kept small, focusing on linking
+#      Loaded by interactive shells, both login and non-login
+#          Loads after .zshenv, .zprofile
+#          Loads before .zlogin
+###############################################################################
+
+
+### ENVIRONMENT VARIABLES
+export DOTFILES=$HOME/dotfiles
+
+### SOURCE ALL .ZSH FILES WITHIN DOTFILES PROJECT
+setopt nullglob
+
+  ### INCLUDE BASH-COMPATIBLE SOURCES
+  for config_file ($DOTFILES/source/system/*) source $config_file
+  for config_file ($DOTFILES/private/source/system/*) source $config_file
+
+  ### INCLUDE ZSH-ONLY SOURCES
+  for config_file ($DOTFILES/source/zsh/*) source $config_file
+  for config_file ($DOTFILES/private/source/zsh/*) source $config_file
+
+unsetopt nullglob
+
+
+### SOURCE LOCAL FILES SYMLINKED TO HOME DIRECTORY
+if [[ -e "$HOME/.paths.local" ]]; then
+  source "$HOME/.paths.local"
+fi
+
+
+### SOURCE OH-MY-ZSH FILES IF IT EXISTS
+if [ -e $ZSH/oh-my-zsh.sh ] && [ -e $DOTFILES/zsh/oh-my-zsh.zsh ]; then
+  source $DOTFILES/zsh/oh-my-zsh.zsh
+fi
+
+
+test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
